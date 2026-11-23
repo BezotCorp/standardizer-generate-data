@@ -1,0 +1,15 @@
+[package]
+name = "standardizer-generate-data"
+version = "0.1.0"
+edition = "2024"
+description = "Generate binary data used by Standardizer"
+license = "Apache-2.0"
+repository = "https://github.com/BezotCorp/standardizer-generate-data"
+readme = "README.md"
+publish = true
+
+[dependencies]
+bincode-next = "3"
+standardizer-common = { version = "2", features = ["encode", "source"] }
+ron = "0.12"
+serde = { version = "1", features = ["derive"] }

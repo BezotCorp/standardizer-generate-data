@@ -1,0 +1,111 @@
+name: Worker Version
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Version selected by worker-check"
+        required: true
+        type: string
+    outputs:
+      has_new_version:
+        description: "Whether semantic-release found a new version to release"
+        value: ${{ jobs.bump.outputs.has_new_version }}
+      new_version:
+        description: "The new version number, if any"
+        value: ${{ jobs.bump.outputs.new_version }}
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    outputs:
+      has_new_version: ${{ steps.run.outputs.has_new_version }}
+      new_version: ${{ steps.run.outputs.new_version }}
+
+    steps:
+      - name: Generate release bot token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.BEZOTCORP_RELEASE_BOT_APP_ID }}
+          private-key: ${{ secrets.BEZOTCORP_RELEASE_BOT_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: true
+
+      - name: Configure Git identity
+        run: |
+          git config user.name "bezotcorp-release-bot[bot]"
+          git config user.email "bezotcorp-release-bot[bot]@users.noreply.github.com"
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install semantic-release-cargo
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SEMANTIC_RELEASE_CARGO_VERSION: v2.4.84
+          SEMANTIC_RELEASE_CARGO_ASSET: semantic-release-cargo-x86_64-unknown-linux-gnu
+        run: |
+          install_dir="$RUNNER_TEMP/semantic-release-cargo"
+          gh release download "$SEMANTIC_RELEASE_CARGO_VERSION" \
+            --repo semantic-release-cargo/semantic-release-cargo \
+            --pattern "$SEMANTIC_RELEASE_CARGO_ASSET" \
+            --pattern SHA256SUMS.txt \
+            --dir "$install_dir"
+          (cd "$install_dir" && grep " \*\?$SEMANTIC_RELEASE_CARGO_ASSET\$" SHA256SUMS.txt | sha256sum --check -)
+          mv "$install_dir/$SEMANTIC_RELEASE_CARGO_ASSET" "$install_dir/semantic-release-cargo"
+          chmod +x "$install_dir/semantic-release-cargo"
+          echo "$install_dir" >> "$GITHUB_PATH"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 26.13.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create release branch from main
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: ./scripts/create-branch.sh release/pending main
+
+      - name: Checkout release branch
+        run: |
+          git fetch origin release/pending
+          git checkout release/pending
+
+      - name: Prepare version commit
+        id: run
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          ./scripts/run-semantic-release-version.sh "${{ inputs.version }}"
+
+          NEW_VERSION=$(./scripts/read-crate-version.sh standardizer-generate-data)
+          echo "has_new_version=true" >> "$GITHUB_OUTPUT"
+          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Open PR into main and wait for merge
+        if: steps.run.outputs.has_new_version == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          ./scripts/open-and-wait-pr-merge.sh \
+            release/pending main \
+            "Release version bump" \
+            "chore: release version bump"

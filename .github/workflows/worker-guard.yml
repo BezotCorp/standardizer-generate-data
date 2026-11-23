@@ -1,0 +1,26 @@
+name: Worker Guard
+
+on:
+  workflow_call:
+
+jobs:
+  dev-contains-main:
+    name: dev contains main
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check that dev contains main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          MISSING_IN_DEV=$(gh api "repos/$GITHUB_REPOSITORY/compare/dev...main" --jq .ahead_by)
+
+          if [ "$MISSING_IN_DEV" != "0" ]; then
+            echo "::error::dev is missing $MISSING_IN_DEV commit(s) from main. Synchronize main into dev before merging into main."
+            exit 1
+          fi
+
+          echo "dev contains main."

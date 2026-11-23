@@ -1,0 +1,45 @@
+#!/bin/sh
+set -eu
+
+fail() {
+    printf 'Erreur : %s\n' "$1" >&2
+    exit 1
+}
+
+hooks_dir=$(
+    CDPATH=''
+    export CDPATH
+    cd -P "$(dirname "$0")" && pwd -P
+) || fail "Impossible de localiser le répertoire des hooks."
+
+repo_dir=$(dirname -- "$hooks_dir")
+
+[ -f "$hooks_dir/pre-commit" ] ||
+    fail "Hook pre-commit introuvable."
+
+[ -x "$hooks_dir/pre-commit" ] ||
+    fail "Hook pre-commit non exécutable."
+
+git_root=$(git -C "$repo_dir" rev-parse --show-toplevel 2>/dev/null) ||
+    fail "Aucun dépôt Git trouvé."
+
+[ "$git_root" = "$repo_dir" ] ||
+    fail "Le répertoire .githooks n'est pas à la racine du dépôt."
+
+current=$(git -C "$repo_dir" config --local --get core.hooksPath || :)
+
+if [ "$current" = ".githooks" ]; then
+    printf 'Hooks Git déjà installés.\n'
+    exit 0
+fi
+
+git -C "$repo_dir" config --local core.hooksPath .githooks ||
+    fail "Impossible de configurer les hooks Git."
+
+installed=$(git -C "$repo_dir" config --local --get core.hooksPath) ||
+    fail "Impossible de vérifier la configuration."
+
+[ "$installed" = ".githooks" ] ||
+    fail "La configuration des hooks est incorrecte."
+
+printf 'Hooks Git installés et vérifiés.\n'

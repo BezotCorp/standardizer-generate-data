@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v standardizer >/dev/null 2>&1; then
+  printf 'Erreur : standardizer est introuvable dans PATH.\n' >&2
+  printf 'Installation : cargo install standardizer --locked\n' >&2
+  exit 1
+fi
+
+root=$(git rev-parse --show-toplevel) || {
+  printf 'Erreur : impossible de trouver la racine du dépôt Git.\n' >&2
+  exit 1
+}
+
+cd "$root"
+exec standardizer fix
