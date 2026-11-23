@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.1](https://github.com/BezotCorp/standardizer-generate-data/compare/1.0.0...1.0.1) (2026-11-23)
+
+### Bug Fixes
+
+* repair the paths name ([cca5eba](https://github.com/BezotCorp/standardizer-generate-data/commit/cca5ebadd02ab1787343615adcfdb8c798e9accd))
+
 ## 1.0.0 (2026-11-23)
 
 ### Features
