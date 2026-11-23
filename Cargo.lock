@@ -118,8 +118,6 @@ dependencies = [
 [[package]]
 name = "standardizer-common"
 version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf6dc8f3589a17b5d6e9cf015aab37178aa42fed0467bc2f83c6f2556f15740a"
 dependencies = [
  "bincode-next",
  "serde",
@@ -127,7 +125,7 @@ dependencies = [
 
 [[package]]
 name = "standardizer-generate-data"
-version = "1.0.0"
+version = "0.1.0"
 dependencies = [
  "bincode-next",
  "ron",
