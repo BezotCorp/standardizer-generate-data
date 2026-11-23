@@ -6,17 +6,17 @@ It is tooling associated with Standardizer and is published on crates.io.
 
 ## Installation
 
-~~~sh
+```sh
 cargo install standardizer-generate-data --locked
-~~~
+```
 
 ## Check
 
 Validate the RON data without generating binary files:
 
-~~~sh
+```sh
 standardizer-generate-data check <ron-directory>
-~~~
+```
 
 The RON directory must contain:
 
@@ -27,9 +27,9 @@ The RON directory must contain:
 
 Validate the RON data and generate the corresponding binary files:
 
-~~~sh
+```sh
 standardizer-generate-data generate <ron-directory> <bin-directory>
-~~~
+```
 
 The generated files are written to the BIN directory:
 
@@ -38,18 +38,18 @@ The generated files are written to the BIN directory:
 
 For the Standardizer data repositories:
 
-~~~sh
+```sh
 standardizer-generate-data check standardizer-data-ron
 standardizer-generate-data generate standardizer-data-ron standardizer-data-bin
-~~~
+```
 
 ## Development
 
-~~~sh
+```sh
 cargo check
 cargo test
 cargo clippy --all-targets -- -D warnings
-~~~
+```
 
 ## License
 
