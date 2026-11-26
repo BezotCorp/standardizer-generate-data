@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.0](https://github.com/BezotCorp/standardizer-generate-data/compare/1.0.1...1.1.0) (2026-11-26)
+
+### Features
+
+* expose generation metadata ([f7b263b](https://github.com/BezotCorp/standardizer-generate-data/commit/f7b263bdfb5145bf58677bceeadda724be99b53d))
+
 ## [1.0.1](https://github.com/BezotCorp/standardizer-generate-data/compare/1.0.0...1.0.1) (2026-11-23)
 
 ### Bug Fixes
