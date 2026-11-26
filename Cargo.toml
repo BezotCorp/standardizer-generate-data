@@ -1,6 +1,6 @@
 [package]
 name = "standardizer-generate-data"
-version = "1.0.1"
+version = "1.1.0"
 edition = "2024"
 description = "Generate binary data used by Standardizer"
 license = "Apache-2.0"
