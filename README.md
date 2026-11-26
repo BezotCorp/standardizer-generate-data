@@ -43,6 +43,34 @@ standardizer-generate-data check standardizer-data-ron
 standardizer-generate-data generate standardizer-data-ron standardizer-data-bin
 ```
 
+## Automation
+
+The `generate` command exposes its generation result on standard output
+using RON:
+
+```ron
+(
+    common_version: "2.2.0",
+    generator_version: "1.0.1",
+)
+```
+
+Both fields represent semantic versions:
+
+- `common_version`: version of the linked `standardizer-common` library.
+- `generator_version`: version of the running generator.
+
+The versions above are illustrative.
+
+A successful generation returns exit code zero.
+Errors are reported on standard error with a non-zero exit code.
+
+The caller is responsible for selecting the data version, maintaining
+provenance and publishing the generated data.
+
+The caller should use an isolated output directory and discard its
+contents if generation fails.
+
 ## Development
 
 ```sh
