@@ -1,10 +1,14 @@
 mod arguments;
 mod dataset;
+mod generation_result;
 mod generator;
 
 use arguments::Arguments;
 use generator::Generator;
-use std::process::ExitCode;
+use std::{
+    io::{self, Write},
+    process::ExitCode,
+};
 
 fn main() -> ExitCode {
     let result = Arguments::parse().and_then(|arguments| match arguments {
@@ -12,7 +16,12 @@ fn main() -> ExitCode {
         Arguments::Generate {
             ron_directory,
             bin_directory,
-        } => Generator::generate(&ron_directory, &bin_directory),
+        } => {
+            let result = Generator::generate(&ron_directory, &bin_directory)?;
+            let response = ron::to_string(&result)?;
+            writeln!(io::stdout().lock(), "{response}")?;
+            Ok(())
+        }
     });
 
     match result {

@@ -10,6 +10,7 @@ publish = true
 
 [dependencies]
 bincode-next = "3"
-standardizer-common = { version = "2", features = ["encode", "source"] }
+standardizer-common = { version = "2.2", features = ["encode", "source"] }
 ron = "0.12"
 serde = { version = "1", features = ["derive"] }
+semver = { version = "1", features = ["serde"] }
