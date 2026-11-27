@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.0](https://github.com/BezotCorp/standardizer-generate-data/compare/1.1.0...1.2.0) (2026-11-27)
+
+### Features
+
+* delegate data processing to standardizer-common ([86f47aa](https://github.com/BezotCorp/standardizer-generate-data/commit/86f47aae95620b465869b7fa29093f21af2dc8da))
+
 ## [1.1.0](https://github.com/BezotCorp/standardizer-generate-data/compare/1.0.1...1.1.0) (2026-11-26)
 
 ### Features
