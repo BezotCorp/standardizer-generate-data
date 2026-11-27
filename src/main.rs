@@ -1,7 +1,9 @@
 mod arguments;
-mod dataset;
 mod generation_result;
 mod generator;
+
+#[cfg(test)]
+mod tests;
 
 use arguments::Arguments;
 use generator::Generator;
