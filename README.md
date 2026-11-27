@@ -4,6 +4,9 @@
 
 It is tooling associated with Standardizer and is published on crates.io.
 
+The shared data structures, validation rules, RON deserialization and
+binary encoding are managed exclusively by standardizer-common.
+
 ## Installation
 
 ```sh
@@ -36,11 +39,11 @@ The generated files are written to the BIN directory:
 - `routing.bin`
 - `tools.bin`
 
-For the Standardizer data repositories:
+From the Standardizer repository:
 
 ```sh
-standardizer-generate-data check standardizer-data-ron
-standardizer-generate-data generate standardizer-data-ron standardizer-data-bin
+standardizer-generate-data check data
+standardizer-generate-data generate data data
 ```
 
 ## Automation
@@ -50,8 +53,8 @@ using RON:
 
 ```ron
 (
-    common_version: "2.2.0",
-    generator_version: "1.0.1",
+    common_version: "2.3.0",
+    generator_version: "1.1.0",
 )
 ```
 
@@ -65,11 +68,14 @@ The versions above are illustrative.
 A successful generation returns exit code zero.
 Errors are reported on standard error with a non-zero exit code.
 
-The caller is responsible for selecting the data version, maintaining
-provenance and publishing the generated data.
+The caller is responsible for selecting the generator version and
+providing the input and output directories.
 
-The caller should use an isolated output directory and discard its
-contents if generation fails.
+The input and output directories may be identical. RON source files
+are not modified by the generator.
+
+Generated binary files are build artifacts. The caller must not use
+them if generation fails.
 
 ## Development
 

@@ -1,4 +1,4 @@
-use crate::{dataset::Dataset, generation_result::GenerationResult};
+use crate::generation_result::GenerationResult;
 use standardizer_common::{routes::Routing, tools::ToolConfiguration};
 use std::{error::Error, fs, path::Path};
 
@@ -21,8 +21,8 @@ impl Generator {
     ) -> Result<GenerationResult, Box<dyn Error>> {
         let result = GenerationResult::new()?;
         let (routing, tools) = Self::read(ron_directory)?;
-        let routing_binary = Dataset::encode(&routing)?;
-        let tools_binary = Dataset::encode(&tools)?;
+        let routing_binary = routing.encode()?;
+        let tools_binary = tools.encode()?;
 
         fs::create_dir_all(bin_directory)?;
         fs::write(bin_directory.join(ROUTING_BIN_FILE), routing_binary)?;
@@ -35,16 +35,16 @@ impl Generator {
         let routing_path = ron_directory.join(ROUTING_RON_FILE);
         let tools_path = ron_directory.join(TOOLS_RON_FILE);
 
-        let routing: Routing = Dataset::read(&routing_path)?;
-
-        routing
-            .validate()
+        let routing_source = fs::read_to_string(&routing_path)
             .map_err(|error| format!("{}: {error}", routing_path.display()))?;
 
-        let tools: ToolConfiguration = Dataset::read(&tools_path)?;
+        let routing = Routing::from_ron(&routing_source)
+            .map_err(|error| format!("{}: {error}", routing_path.display()))?;
 
-        tools
-            .validate()
+        let tools_source = fs::read_to_string(&tools_path)
+            .map_err(|error| format!("{}: {error}", tools_path.display()))?;
+
+        let tools = ToolConfiguration::from_ron(&tools_source)
             .map_err(|error| format!("{}: {error}", tools_path.display()))?;
 
         Ok((routing, tools))
